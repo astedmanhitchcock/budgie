@@ -1,0 +1,175 @@
+{% extends "budgie-base.html" %}
+
+{% block app_content %}
+<div class="container">
+    <div class="page-header">
+        <h2>dashboard</h2>
+        {% if budget %}
+            <h4>
+                currently viewing budget breakdown for {{ month_str }}
+            </h4>
+        {% else %}
+            <h4>
+                you have no monthly budgets defined.
+            </h4>
+        {% endif %}
+    </div>
+    {% if budget %}
+        <form action="" method="post" novalidate>
+            {{ budget_select_form.hidden_tag() }}
+            <div class="input-group">
+                <!-- <input type="text" class="form-control" placeholder="Search for..."> -->
+                {{ budget_select_form.month(class_="form-control") }}
+                <span class="input-group-btn">
+                    <button class="btn btn-success" type="submit">
+                        {{ budget_select_form.submit.label.text }}
+                    </button>
+                </span>
+            </div>
+            <span class="help-block" style="color: black">
+                Not seeing the correct budget? 
+                <a href="{{ url_for('budgets.create') }}">add new monthly budget</a>
+            </span>
+        </form>
+    {% endif %}
+    {% if budget == None %}
+        <a class="btn btn-primary" style="margin-top:12px" href="{{ url_for('budgets.create') }}">
+            create a new monthly budget
+        </a>
+    {% else %}
+        <div class="well" style="margin-top: 40px">
+            <div class="row">
+                {% if projected %}
+                <div class="col-sm-6">
+                    <h3>
+                        Projected
+                    </h3>
+                    <ul style="list-style: none; padding: 0">
+                        {% for key, val in projected.items() %}
+                        <li>
+                            {% if key == 'income' %}
+                                <div style="display: flex; align-items: center; justify-content: space-between;">
+                                    <h4>
+                                        {{ key }} :
+                                    </h4>
+                                    {{ val }}
+                                </div>
+                                <hr>
+                            {% elif key == 'total expenses' %}
+                                <hr>
+                                <div style="display: flex; align-items: center; justify-content: space-between;">
+                                    <h4>
+                                        {{ key }} :
+                                    </h4>
+                                    {{ val }}
+                                </div>
+                            {% elif key == 'savings' %}
+                                <hr>
+                                {% if val|float < 0 %}
+                                    <div style="color: red; display: flex; align-items: center; justify-content: space-between;">
+                                        <h4>
+                                            {{ key }} :
+                                        </h4>
+                                        {{ val }}
+                                    </div>
+                                {% else %}
+                                    <div style="color: green; display: flex; align-items: center; justify-content: space-between;">
+                                        <h4>
+                                            {{ key }} :
+                                        </h4>
+                                        {{ val }}
+                                    </div>
+                                {% endif %}
+                            {% else %}
+                                <h4>
+                                    {{ key }}
+                                </h4>
+                                {% for list in val %}
+                                    <ul style="list-style: none; padding-left: 20px">
+                                        <li>
+                                            <div style="display: flex; align-items: center; justify-content: space-between;">
+                                                <h5>
+                                                    {{ list[0] }} :
+                                                </h5>
+                                                {{ list[1] }}
+                                            </div>
+                                        </li>
+                                    </ul>
+                                {% endfor %}
+                            {% endif %}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    <a class="btn btn-primary" href="{{ url_for('budgets.update', id=budget.id) }}">
+                        edit budget
+                    </a>
+                </div>
+                {% endif %}
+                {% if actual %}
+                    <div class="col-sm-6">
+                        <h3>
+                            Actual
+                        </h3>
+                        <ul style="list-style: none; padding: 0">
+                            {% for key, val in actual.items() %}
+                            <li>
+                                {% if key == 'income' %}
+                                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                                        <h4>
+                                            {{ key }} :
+                                        </h4>
+                                        {{ val }}
+                                    </div>
+                                    <hr>
+                                {% elif key == 'total expenses' %}
+                                    <hr>
+                                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                                        <h4>
+                                            {{ key }} :
+                                        </h4>
+                                        {{ val }}
+                                    </div>
+                                {% elif key == 'savings' %}
+                                    <hr>
+                                    {% if val|float < 0 %}
+                                        <div style="color: red; display: flex; align-items: center; justify-content: space-between;">
+                                            <h4>
+                                                {{ key }} :
+                                            </h4>
+                                            {{ val }}
+                                        </div>
+                                    {% else %}
+                                        <div style="color: green; display: flex; align-items: center; justify-content: space-between;">
+                                            <h4>
+                                                {{ key }} :
+                                            </h4>
+                                            {{ val }}
+                                        </div>
+                                    {% endif %}
+                                {% else %}
+                                    <h4>
+                                        {{ key }}
+                                    </h4>
+                                    {% for list in val %}
+                                        <ul style="list-style: none; padding-left: 20px">
+                                            <li>
+                                                <div style="display: flex; align-items: center; justify-content: space-between;">
+                                                    <h5>
+                                                        {{ list[0] }} :
+                                                    </h5>
+                                                    {{ list[1] }}
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    {% endfor %}
+                                {% endif %}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

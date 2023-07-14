@@ -1,0 +1,15 @@
+{% extends "budgie-base.html" %}
+
+{% block app_content %}
+<div class="container">
+    <a class="btn btn-primary" href="{{ url_for('transactions.create') }}">
+        add new transaction
+    </a>
+    <hr>
+    {% if transactions %}
+        {% include '_ledger.html' %}
+    {% else %}
+        you have no transactions logged.
+    {% endif %}
+</div>
+{% endblock %}

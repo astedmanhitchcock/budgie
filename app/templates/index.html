@@ -1,0 +1,27 @@
+{% extends "budgie-base.html" %}
+
+{% block app_content %}
+<div class="container">
+    {% if not current_user.is_anonymous %}
+        <div class="page-header">
+            <h2>Welcome back to budgie, {{ current_user.username }}!</h2>
+        </div>
+        <div class="well">
+            Get in there and track that spending!
+            <br>
+            <a class="btn btn-primary" style="margin-top:12px" href="{{ url_for('dashboard') }}">
+                go to the dashboard
+            </a>
+        </div>
+    {% else %}
+        <div class="page-header">
+            <h2>Welcome to budgie.</h2>
+        </div>
+        <div class="well">
+            Budgie is a friendly, family/household budget app. 
+            <hr />
+            Just trying to balance life? Us too. But this is just a beta. So access is limited.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

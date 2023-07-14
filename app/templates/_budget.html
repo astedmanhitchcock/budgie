@@ -1,0 +1,76 @@
+<form action="" method="post" novalidate>
+    {{ form.hidden_tag() }}
+    <div class="form-group{{ ' has-error' if form.month.errors }}">
+        {{ form.month.label(class_="control-label") }}
+        {{ form.month(class_="form-control", type="month") }}
+        {% for error in form.month.errors %}
+            <span class="help-block">{{ error }}</span>
+        {% endfor %}
+    </div>
+
+    <div class="form-group{{ ' has-error' if form.income.errors }}">
+        {{ form.income.label(class_="control-label") }}
+        {{ form.income(class_="form-control") }}
+        {% for error in form.income.errors %}
+            <span class="help-block">{{ error }}</span>
+        {% endfor %}
+    </div>
+
+    <hr>
+
+    {% if form.fixed_expenses %}
+        <h4>
+            Fixed Expenses
+        </h4>
+        {% for expense in form.fixed_expenses %}
+            {{ expense.hidden_tag() }}
+            {% for el in expense.object_data.items() %}
+                <div class="form-group">
+                    {{ expense.label(text=el[0]) }}
+                    {{ expense.amount(class_="form-control") }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+        <a class="btn btn-primary" href="{{ url_for('categories.create') }}">
+            add new category
+        </a>
+    {% else %}
+        <div>
+            <p>you have no fixed expenses</p>
+            <a class="btn btn-primary" href="{{ url_for('categories.create') }}">
+                add new category
+            </a>
+        </div>
+    {% endif %}
+    <hr>
+
+    {% if form.flex_expenses %}
+        <h4>
+            Flexible Expenses
+        </h4>
+        {% for expense in form.flex_expenses %}
+            {{ expense.hidden_tag() }}
+            {% for el in expense.object_data.items() %}
+                <div class="form-group">
+                    {{ expense.label(text=el[0]) }}
+                    {{ expense.amount(class_="form-control") }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+        <a class="btn btn-primary" href="{{ url_for('categories.create') }}">
+            add new category
+        </a>
+    {% else %}
+        <div>
+            <p>you have no flexible expenses</p>
+            <a class="btn btn-primary" href="{{ url_for('categories.create') }}">
+                add new category
+            </a>
+        </div>
+    {% endif %}
+    <hr>
+
+    <button type="submit" class="btn btn-success">
+        {{ form.submit.label.text }}
+    </button>
+</form>

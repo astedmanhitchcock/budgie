@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+    <div class="container">
+        <div class="panel panel-success" style="max-width: 480px; margin: 0 auto;">
+            <div class="panel-heading">
+                <h2 class="panel-title">Sign In</h2>
+            </div>
+            <div class="panel-body">
+                <form action="" method="post" novalidate>
+                    {{ form.hidden_tag() }}
+                    <div class="form-group{{ ' has-error' if form.password.errors }}">
+                        {{ form.username.label(class_="control-label") }}
+                        {{ form.username(size=32, class_="form-control") }}
+                        {% for error in form.username.errors %}
+                            <span class="help-block">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="form-group{{ ' has-error' if form.password.errors }}">
+                        {{ form.password.label(class_="control-label") }}
+                        {{ form.password(size=32, class_="form-control") }}
+                        {% for error in form.password.errors %}
+                            <span class="help-block">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            {{ form.remember_me() }} 
+                            remember me
+                        </label>
+                    </div>
+                    <br>
+                    <button type="submit" class="btn btn-default">login</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

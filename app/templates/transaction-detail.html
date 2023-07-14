@@ -1,0 +1,14 @@
+{% extends "budgie-base.html" %}
+
+{% block app_content %}
+<div class="container">
+    {% if transaction %}
+        <h2>Transaction id: {{transaction.id}}</h2>
+    {% else %}
+        <h2>Create a new transaction</h2>
+    {% endif %}
+    <hr>
+    {% include '_transaction.html' %}
+</div>
+
+{% endblock %}
