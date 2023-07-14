@@ -113,7 +113,7 @@ def dashboard(budget_id):
             'savings': f'{actual_savings:.2f}'
         }
     
-    return render_template('dashboard.html', budget_select_form=budget_select_form, budget=curr_budget, month_str=curr_month_str, projected=projected, actual=actual)
+    return render_template('dashboard.html', title='dashboard', budget_select_form=budget_select_form, budget=curr_budget, month_str=curr_month_str, projected=projected, actual=actual)
 
 
 @app.route('/budgie/user/<username>')

@@ -58,7 +58,7 @@ def all():
 
         data.append(el)
 
-    return render_template('transactions.html',  transactions=data)
+    return render_template('transactions.html', title='transactions',  transactions=data)
 
 @transactions_bp.route('/create', methods=['GET', 'POST'])
 @login_required
@@ -91,7 +91,7 @@ def create():
         flash(f'transaction created :: {form.source.data} for ${form.amount.data}')
         return redirect(url_for('transactions.all'))
 
-    return render_template('transaction-detail.html', form=form)
+    return render_template('transaction-detail.html', title='create transaction', form=form)
 
 @transactions_bp.route('/update/<id>', methods=['GET', 'POST'])
 @login_required
@@ -130,7 +130,7 @@ def update(id):
         flash(f'updated transaction #{id}')
         return redirect(url_for('transactions.all'))
 
-    return render_template('transaction-detail.html', form=form, transaction=data)
+    return render_template('transaction-detail.html', title='update transaction', form=form, transaction=data)
 
 @transactions_bp.route('/delete/<id>', methods=['GET', 'POST'])
 @login_required

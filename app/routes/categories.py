@@ -16,7 +16,7 @@ def all():
     form = CategoryForm()
     categories = ExpenseCategory.query.order_by(ExpenseCategory.title).all()
 
-    return render_template('categories.html', title='add category', form=form, categories=categories)
+    return render_template('categories.html', title='categories', form=form, categories=categories)
 
 @categories_bp.route('/create', methods=['GET', 'POST'])
 @login_required
@@ -35,7 +35,7 @@ def create():
         flash(f'added new category :: {form.title.data}')
         return redirect(url_for('categories.all'))
 
-    return render_template('category-detail.html', form=form)
+    return render_template('category-detail.html', title='create category', form=form)
 
 @categories_bp.route('/update/<id>', methods=['GET', 'POST'])
 @login_required
@@ -60,7 +60,7 @@ def update(id):
         flash(f'updated category #{id}')
         return redirect(url_for('categories.all'))
 
-    return render_template('category-detail.html', form=form, category=data)
+    return render_template('category-detail.html', title='update category', form=form, category=data)
 
 @categories_bp.route('/delete/<id>', methods=['GET', 'POST'])
 @login_required

@@ -49,7 +49,7 @@ def all():
 
         data.append(el)
 
-    return render_template('budgets.html', title='monthly budgets', budgets=data)
+    return render_template('budgets.html', title='budgets', budgets=data)
 
 
 @budgets_bp.route('/create', methods=['GET', 'POST'])
@@ -82,7 +82,7 @@ def create():
         flash(f"added new budget for the month of {budget.month.strftime('%m/%Y')}")
         return redirect(url_for('budgets.all'))
 
-    return render_template('budget-detail.html', form=form)
+    return render_template('budget-detail.html', title='create budget', form=form)
 
 
 @budgets_bp.route('/update/<id>', methods=['GET', 'POST'])
@@ -142,7 +142,7 @@ def update(id):
         flash(f'updated budget #{id}')
         return redirect(url_for('budgets.all'))
 
-    return render_template('budget-detail.html', form=form, budget=budget, month_str=month_str)
+    return render_template('budget-detail.html', title='update budget', form=form, budget=budget, month_str=month_str)
 
 
 @budgets_bp.route('/delete/<id>', methods=['GET', 'POST'])
