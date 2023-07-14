@@ -3,6 +3,8 @@ Budgie is a simple, friendly app to help create budgets and track spending. It w
 
 So, I created this project to handle both those things!
 
+Next steps? Create a REST API and a frontend app to consume it. 
+
 ## Local setup
 - Pull this project down.
 - Cd into the project.
