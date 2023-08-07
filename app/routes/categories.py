@@ -1,8 +1,9 @@
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
+from datetime import datetime
 
 from app import db
-from app.models import User, ExpenseCategory
+from app.models import User, ExpenseCategory, Transaction
 from app.forms import CategoryForm
 
 
@@ -71,3 +72,32 @@ def delete(id):
     
     flash(f'deleted category #{id}')
     return redirect(url_for('categories.all'))
+
+@categories_bp.route('/transactions/<id>', methods=['GET', 'POST'])
+@login_required
+def transactions(id):
+    category = ExpenseCategory.query.filter_by(id=int(id)).first_or_404()
+    transactions = Transaction.query.filter_by(category=category.title).all()
+    title = f'#{category.title} Transactions'
+
+    # Sanitize transaction data for frontend
+    data = []
+    for t in transactions:
+        amount_in_dollars = t.amount_cents / 100
+
+        if not t.is_income:
+            amount_in_dollars = -1 * amount_in_dollars
+
+        el = {}
+        el['id'] = t.id
+        el['date'] = datetime.date(t.date).strftime("%m/%d/%Y") if t.date else None
+        el['amount'] = f'{amount_in_dollars:.2f}'
+        el['source'] = t.source
+        el['category'] = t.category
+        el['created_by'] = t.created_by
+        el['notes'] = t.notes
+        el['is_income'] = t.is_income
+
+        data.append(el)
+
+    return render_template('transactions.html', title=title,  transactions=data)

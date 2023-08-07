@@ -20,7 +20,11 @@
                 <tbody>
                     {% for category in categories %}
                     <tr>
-                        <td>{{ category.title }}</td>
+                        <td>
+                          <a href="{{ url_for('categories.transactions', id=category.id) }}">
+                            {{ category.title }}
+                          </a>
+                        </td>
                         <td>{{ category.is_fixed }}</td>
                         <td>{{ category.notes }}</td>
                         <td align="right">

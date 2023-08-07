@@ -35,8 +35,10 @@ def dashboard(budget_id):
             formatted_date = datetime(curr_date.year, curr_date.month, 1)
             curr_budget = MonthlyFixedBudget.query.filter_by(month=formatted_date).first()
             if curr_budget is None:
-                curr_budget = MonthlyFixedBudget.query.one()
+                curr_budget = MonthlyFixedBudget.query.first()
     
+    projected = dict()
+    actual = None
     # Sanitize for the FE
     # Sets date string and establishes selected budget in select field.
     if curr_budget:
@@ -47,7 +49,6 @@ def dashboard(budget_id):
         if curr_budget.income_cents is not None:
             income_in_dollars = curr_budget.income_cents/100
 
-        projected = dict()
         fixed_expenses = []
         flexible_expenses = []
         total_expenses = 0
