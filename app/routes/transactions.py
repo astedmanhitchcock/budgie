@@ -66,6 +66,7 @@ def create():
     form = get_form()
 
     if form.validate_on_submit():
+        form = TransactionForm()
         user_id = form.user.data
         user = User.query.filter_by(id=user_id).first()
         is_income = form.is_income.data == 'True'
