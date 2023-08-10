@@ -15,6 +15,7 @@ cryptography==41.0.1
 dominate==2.8.0
 Flask==2.3.2
 Flask-Bootstrap==3.3.7.1
+Flask-Cors==4.0.0
 Flask-Login==0.6.2
 Flask-Migrate==4.0.4
 Flask-SQLAlchemy==3.0.5

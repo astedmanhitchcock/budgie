@@ -5,12 +5,15 @@ from config import Config
 from flask_login import LoginManager
 from flask_bootstrap import Bootstrap
 from google.cloud import error_reporting
+from flask_cors import CORS
+
 
 # Globally accessible libraries
 db = SQLAlchemy()
 migrate = Migrate()
 login = LoginManager()
 bootstrap = Bootstrap()
+cors = CORS()
 
 def create_app():
     print('creating app')
@@ -25,6 +28,7 @@ def create_app():
     login.init_app(app)
     login.login_view = 'auth.login'
     bootstrap.init_app(app)
+    cors.init_app(app)
 
     # Add an error handler that reports exceptions to Stackdriver Error
     # Reporting. Note that this error handler is only used when debug
@@ -42,11 +46,12 @@ def create_app():
 
     with app.app_context():
         from app.routes import routes
-        from app.routes import auth_bp, transactions_bp, categories_bp, budgets_bp
+        from app.routes import auth_bp, transactions_bp, categories_bp, budgets_bp, api_bp
 
         app.register_blueprint(auth_bp)
         app.register_blueprint(transactions_bp)
         app.register_blueprint(categories_bp)
         app.register_blueprint(budgets_bp)
+        app.register_blueprint(api_bp)
 
         return app  

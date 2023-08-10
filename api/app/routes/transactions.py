@@ -4,7 +4,7 @@ from flask_login import current_user, login_required
 from werkzeug.urls import url_parse
 from datetime import datetime
 
-from app import db
+from app import db, services
 from app.models import User, ExpenseCategory, Transaction
 from app.forms import TransactionForm
 
@@ -36,27 +36,11 @@ def get_form(obj=None):
 @transactions_bp.route('/all')
 @login_required
 def all():
-    transactions = Transaction.query.order_by(Transaction.date.desc()).all()
+    transaction_service = services.TransactionService()
+    transactions = transaction_service.get_all()
     
     # Sanitize transaction data for frontend
-    data = []
-    for t in transactions:
-        amount_in_dollars = t.amount_cents / 100
-
-        if not t.is_income:
-            amount_in_dollars = -1 * amount_in_dollars
-
-        el = {}
-        el['id'] = t.id
-        el['date'] = datetime.date(t.date).strftime("%m/%d/%Y") if t.date else None
-        el['amount'] = f'{amount_in_dollars:.2f}'
-        el['source'] = t.source
-        el['category'] = t.category
-        el['created_by'] = t.created_by
-        el['notes'] = t.notes
-        el['is_income'] = t.is_income
-
-        data.append(el)
+    data = transaction_service.sanitize_for_client(transactions)
 
     return render_template('transactions.html', title='transactions',  transactions=data)
 
