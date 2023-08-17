@@ -1,0 +1,28 @@
+/* plain css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+.income-row {
+  background-color: #bbeabb !important;
+}
+
+.p-invalid {
+  background-color: rgba(#B00020, 0.25);
+  color: #B00020;
+
+  .p-inputtext {
+    background-color: transparent
+  }
+
+  & + label,
+  &:focus + label {
+    color: #B00020 !important;
+  }
+}

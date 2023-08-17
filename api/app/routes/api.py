@@ -3,12 +3,12 @@ from flask_cors import cross_origin
 from datetime import datetime
 
 from app import db, services
-from app.models import Transaction
+from app.models import ExpenseCategory, Transaction, User
 
 api_bp = Blueprint("api", __name__, url_prefix="/api/v0")
 
 @api_bp.route('/transactions')
-def transactions():
+def get_all_transactions():
     transaction_service = services.TransactionService()
     transactions = transaction_service.get_all()
     data = transaction_service.sanitize_for_client(transactions)
@@ -23,25 +23,53 @@ def get_transaction(id):
 
     return jsonify(data)
 
+@api_bp.route('/create-transaction', methods=['POST'])
+def create_transaction():
+    body = request.get_json()
+    amount = body.get('amount')
+    amount_cents = int(float(amount) * 100) if amount is not None else 0.00
+    user = User.query.filter_by(id=body.get('created_by')).first()
+    print(user)
+    transaction = Transaction(
+      is_income=body.get('is_income'),
+      amount_cents=amount_cents,
+      source=body.get('source'), 
+      date=body.get('date'),
+      created_by=user,
+      category=body.get('category'),
+      notes=body.get('notes'),
+    )
+
+    db.session.add(transaction)
+    db.session.commit()
+    
+    transactions = get_all_transactions()
+
+    return transactions
+
 @api_bp.route('/update-transaction', methods=['POST'])
 def update_transaction():
-    print('updating??')
     body = request.get_json()
     id = body.get('id')
     amount = body.get('amount')
-    print('body : ', body)
-    print(float(amount))
     amount_cents = int(float(amount) * 100) if amount is not None else 0.00
-    print(amount_cents)
+
     updates = {
       'is_income': body.get('is_income'),
-      'amount_cents': amount_cents
+      'amount_cents': amount_cents,
+      'source': body.get('source'),
+      'date': body.get('date'),
+      'user_id': body.get('created_by'),
+      'category': body.get('category'),
+      'notes': body.get('notes')
     }
-    # print(updates)
+
     db.session.query(Transaction).filter_by(id=int(id)).update(updates)
     db.session.commit()
 
-    return jsonify({'success': True})
+    transactions = get_all_transactions()
+
+    return transactions
 
 
 @api_bp.route('/delete-transaction', methods=['POST'])
@@ -51,9 +79,37 @@ def delete_transaction():
     
     if id is not None:
       transaction_service = services.TransactionService() 
-      deleted_transaction = transaction_service.delete_transaction(id)
+      transaction_service.delete_transaction(id)
+      transactions = get_all_transactions()
 
-      if deleted_transaction is not None:
-          return jsonify({'success': True})
+      return transactions
 
-    return jsonify({'success': False})
+@api_bp.route('/users')
+def get_all_users():
+    users = User.query.all()
+    data = []
+
+    for u in users:
+        user = {}
+        user['id'] = u.id
+        user['username'] = u.username
+
+        data.append(user)
+
+    return jsonify(data)
+
+@api_bp.route('/categories')
+def get_all_categories():
+    categories = ExpenseCategory.query.order_by(ExpenseCategory.title).all()
+    data = []
+
+    for c in categories:
+        category = {}
+        category['id'] = c.id
+        category['title'] = c.title
+        category['is_fixed'] = c.is_fixed
+        category['notes'] = c.notes
+
+        data.append(category)
+
+    return jsonify(data)

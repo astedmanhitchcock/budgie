@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { Link } from "react-router-dom";
 
 import { ProgressSpinner } from 'primereact/progressspinner';
@@ -7,33 +7,16 @@ import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { Toast } from 'primereact/toast';
+import { Toolbar } from 'primereact/toolbar';
+        
 
-import EditTransactionModal from '../components/EditTransactionModal';
+import TransactionModal from '../components/TransactionModal';
+import { useDataContext } from '../App';
 
-interface transaction {
-  id: string;
-}
 
 const Transactions: React.FC = () => {
-  const [allTransactions, setAllTransactions] = useState<transaction[] | undefined>(undefined);
-  const [pageError, setPageError] = useState<boolean>(false);
-
-  const getTransactions = async () => {
-    fetch(`${process.env.API_URL}transactions`, {
-      method: "GET"
-    }).then(async (res) => {
-      if (res.ok) {
-        const jsonData = await res.json();
-        setAllTransactions(jsonData);
-      } else {
-        console.log('res err? :: ', res);
-        setPageError(true);
-      }
-    }).catch(err => {
-      console.log('error :: ', err);
-      setPageError(true);
-    });
-  };
+  const dataContext: any = useDataContext();
+  const pageError = false
 
   const toast = useRef<Toast>(null);
 
@@ -41,17 +24,18 @@ const Transactions: React.FC = () => {
     toast.current?.show({ severity: 'warn', summary: 'Rejected', detail: 'You have rejected', life: 3000 });
   }
 
-  const confirm2 = (evt: any, id: number) => {
+  const confirm2 = (evt: any, rowData: {id: string}) => {
+    const { id } = rowData;
     
     const confirmDelete = async () => {
       fetch(`${process.env.API_URL}delete-transaction`, {
         method: "POST",
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({id})
+        body: JSON.stringify({ id })
       }).then((res) => res.json())
         .then(data => { 
-          console.log('data ! ', data)
-          getTransactions();
+          console.log('data :: ', data)
+          dataContext?.setTransactions(data);
           toast.current?.show({ severity: 'info', summary: 'Confirmed', detail: 'You have accepted', life: 3000 });
         });
     }
@@ -66,47 +50,55 @@ const Transactions: React.FC = () => {
     });
   };
 
-  const rowClassName = (rowData: any) => (rowData.is_income ? 'bg-green-500' : '');
+  const rowClassName = (rowData: any) => (rowData.is_income ? 'income-row' : '');
+
+  const amountTemplate = (rowData: any) => {
+    const amount = rowData.is_income ? rowData.amount : `-${rowData.amount}`;
+
+    return (<>{ amount }</>)
+  }
 
   const editButton = (rowData: any) => {
     return (
-      <EditTransactionModal {...rowData} onClose={getTransactions} />
+      <TransactionModal transaction={rowData} />
     )
   }
 
   const deleteButton = (rowData: any) => {
     const path = `/transactions/${rowData.id}`;
     return (
-      <Button icon="pi pi-trash" rounded severity="danger" onClick={(e) => confirm2(e, rowData.id)}></Button>
+      <Button icon="pi pi-trash" rounded severity="danger" onClick={(e) => confirm2(e, rowData)}></Button>
     )
   }
-    
-  useEffect(() => {
-    getTransactions();
-  }, []);
 
   return (
     <div>
-      <h2 className="font-bold text-18 mb-12">
-        transactions
-      </h2>
-      <hr />
-      {pageError && (
+      <Toolbar
+        start={
+          <h2 className="font-bold text-xl">
+            Transactions
+          </h2>
+        } 
+        end={<TransactionModal />}
+      />
+      {pageError ? (
         <>
           Error getting data.
         </>
-      )}
-      {!allTransactions ? (
+      ) :
+      !dataContext?.transactions ? (
         <div className='absolute top-1/2 translate-y-[-50%] left-1/2 translate-x-[-50%]'>
           <ProgressSpinner />
         </div>
-      ) : allTransactions.length > 0 ? (
+      ) : 
+      dataContext?.transactions?.length > 0 ? (
         <>
           <Toast ref={toast} />
           <ConfirmDialog />
-          <DataTable value={allTransactions} rowClassName={rowClassName}>
+          <DataTable value={dataContext?.transactions} rowClassName={rowClassName}>
+            <Column field="is_income" header="is income" ></Column>
             <Column field="date" header="date" ></Column>
-            <Column field="amount" header="amount"></Column>
+            <Column field="amount" header="amount" body={amountTemplate}></Column>
             <Column field="category" header="category"></Column>
             <Column field="source" header="source"></Column>
             <Column field="created_by" header="user"></Column>
