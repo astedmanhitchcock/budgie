@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { Routes, Route, Outlet, Link } from "react-router-dom";
 
-import BaseNav from './components/BaseNav';
+import BaseNav from './components/BaseNav/BaseNav';
 import BaseFooter from './components/BaseFooter';
 
 import Dashboard from '@pages/Dashboard';
@@ -40,7 +40,6 @@ const Provider: Context<unknown> = ({ children, transactions, categories, users,
   return (
     <DataContext.Provider value={{transactions, categories, users, setTransactions, setUsers, setCategories}}>
       <UiContext.Provider value={{isMobile}}>
-
         { children }
       </UiContext.Provider>
     </DataContext.Provider>
@@ -66,7 +65,7 @@ const App: React.FC = () => {
     }).then(async (res) => {
       if (res.ok) {
         const jsonData = await res.json();
-        console.log('transactions! :: ', jsonData);
+        console.log('transactions received! :: ', jsonData);
         setAllTransactions(jsonData);
       } else {
         console.log('res err? :: ', res);
@@ -82,7 +81,7 @@ const App: React.FC = () => {
     }).then(async (res) => {
       if (res.ok) {
         const jsonData = await res.json();
-        console.log('categories! :: ', jsonData);
+        // console.log('categories! :: ', jsonData);
         setAllCategories(jsonData)
       } else {
         console.log('res err? :: ', res);
@@ -98,7 +97,7 @@ const App: React.FC = () => {
     }).then(async (res) => {
       if (res.ok) {
         const jsonData = await res.json();
-        console.log('users! :: ', jsonData);
+        // console.log('users! :: ', jsonData);
         setAllUsers(jsonData)
       } else {
         console.log('res err? :: ', res);

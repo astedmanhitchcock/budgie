@@ -53,8 +53,6 @@ const EditTransactionModal: React.FC<TransactionModalProps> = ({transaction}) =>
   const submitBtnText = transaction?.id ? "update" : "create"
   const endpoint = transaction?.id ? "update-transaction" : "create-transaction"
 
-  const isMobile = window.innerWidth < 768;
-
   const handleClick = () => {
     setIsVisible(!isVisible)
   }
@@ -126,9 +124,9 @@ const EditTransactionModal: React.FC<TransactionModalProps> = ({transaction}) =>
     return title;
   }
 
-  useEffect(() => {
-    console.log('transaction?? ', transaction)
-  }, [])
+  // useEffect(() => {
+  //   console.log('transaction?? ', transaction)
+  // }, [])
 
   useEffect(() => {
     if (!isVisible) {

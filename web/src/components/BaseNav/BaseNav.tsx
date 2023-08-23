@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 import { Menubar } from 'primereact/menubar';
 
+import './BaseNav.scss'
+
 const BaseNav: React.FC = () => {
   const navItems = [
     {
