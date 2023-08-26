@@ -1,5 +1,4 @@
 import { MouseEvent, useEffect, useState } from 'react';
-import classnames from 'classnames';
 
 import { Button } from 'primereact/button';
 import { Calendar } from 'primereact/calendar';
@@ -9,6 +8,7 @@ import { Dropdown } from 'primereact/dropdown';
 import { InputNumber } from 'primereact/inputnumber';
 import { InputText } from 'primereact/inputtext';
 import { InputTextarea } from "primereact/inputtextarea";
+import { classNames } from 'primereact/utils';
 
 import { useDataContext } from '../App';
 import { useUiContext } from '../App';
@@ -124,10 +124,6 @@ const EditTransactionModal: React.FC<TransactionModalProps> = ({transaction}) =>
     return title;
   }
 
-  // useEffect(() => {
-  //   console.log('transaction?? ', transaction)
-  // }, [])
-
   useEffect(() => {
     if (!isVisible) {
       resetForm()
@@ -155,7 +151,6 @@ const EditTransactionModal: React.FC<TransactionModalProps> = ({transaction}) =>
         <Button
           aria-label="edit transaction"
           icon="pi pi-pencil"
-          rounded
           severity="secondary"
           onClick={handleClick}
         />
@@ -188,7 +183,7 @@ const EditTransactionModal: React.FC<TransactionModalProps> = ({transaction}) =>
           <div className="p-float-label my-5">
             <InputNumber
               inputId="amount"
-              className={classnames('w-full', {'p-invalid': formErrors.includes('amount')})}
+              className={classNames('w-full', {'p-invalid': formErrors.includes('amount')})}
               placeholder="Amount"
               value={formData?.amount}
               onValueChange={(e) => handleFieldUpdate(e.value, 'amount')}
@@ -200,7 +195,7 @@ const EditTransactionModal: React.FC<TransactionModalProps> = ({transaction}) =>
           <div className="p-float-label my-5">
             <InputText
               id='source'
-              className={classnames('w-full', {'p-invalid': formErrors.includes('source')})}
+              className={classNames('w-full', {'p-invalid': formErrors.includes('source')})}
               placeholder='Source'
               value={formData?.source}
               onChange={(e) => handleFieldUpdate(e.target.value, 'source')}
@@ -211,7 +206,7 @@ const EditTransactionModal: React.FC<TransactionModalProps> = ({transaction}) =>
           <div className='p-float-label my-5'>
             <Calendar
               inputId='date'
-              className={classnames('w-full', {'p-invalid': formErrors.includes('date')})}
+              className={classNames('w-full', {'p-invalid': formErrors.includes('date')})}
               value={formData?.date ? new Date(formData?.date) : undefined}
               onChange={e => handleFieldUpdate(e.value as Date, 'date')}
               placeholder='Date of Transaction'
@@ -226,7 +221,7 @@ const EditTransactionModal: React.FC<TransactionModalProps> = ({transaction}) =>
                 onChange={(e) => handleFieldUpdate(e.value, 'created_by')}
                 options={dataContext?.users}
                 optionLabel="username"
-                className={classnames('w-full', {'p-invalid': formErrors.includes('created_by')})}
+                className={classNames('w-full', {'p-invalid': formErrors.includes('created_by')})}
                 placeholder='Select User'
               />
               <label htmlFor="user-select">Select User</label>
@@ -239,7 +234,7 @@ const EditTransactionModal: React.FC<TransactionModalProps> = ({transaction}) =>
                 onChange={(e) => handleFieldUpdate(e.value, 'category')}
                 options={dataContext?.categories}
                 optionLabel="title"
-                className={classnames('w-full', {'p-invalid': formErrors.includes('category')})}
+                className={classNames('w-full', {'p-invalid': formErrors.includes('category')})}
                 placeholder='Select Category'
               />
               <label htmlFor="user-select">Select Category</label>

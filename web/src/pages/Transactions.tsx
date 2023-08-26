@@ -1,7 +1,6 @@
 import { useContext, useEffect, useRef, useState } from 'react';
 
 import { FilterMatchMode, FilterOperator } from 'primereact/api'
-import { ProgressSpinner } from 'primereact/progressspinner';
 import { DataTable } from 'primereact/datatable';
 import { Dropdown } from 'primereact/dropdown';
 import { Calendar } from 'primereact/calendar';
@@ -24,7 +23,6 @@ const Transactions: React.FC = () => {
   const [users, setUsers] = useState(undefined);
 
   const dataContext: any = useDataContext();
-  const pageError = false
 
   const toast = useRef<Toast>(null);
 
@@ -170,7 +168,7 @@ const Transactions: React.FC = () => {
   const deleteButton = (rowData: any) => {
     const path = `/transactions/${rowData.id}`;
     return (
-      <Button icon="pi pi-trash" rounded severity="danger" onClick={(e) => confirm2(e, rowData)}></Button>
+      <Button icon="pi pi-trash" severity="danger" onClick={(e) => confirm2(e, rowData)}></Button>
     )
   }
 
@@ -193,7 +191,7 @@ const Transactions: React.FC = () => {
 
   useEffect(() => {
     if (!categories && dataContext?.categories) {
-      setCategories(dataContext?.categorie);
+      setCategories(dataContext?.categories);
     }
   }, [dataContext.categories])
 
@@ -213,73 +211,65 @@ const Transactions: React.FC = () => {
         } 
         end={<TransactionModal />}
       />
-      {pageError ? (
-        <>
-          Error getting data.
-        </>
-      ) : (
-        <>
-          <Toast ref={toast} />
-          <ConfirmDialog />
-          <DataTable 
-            loading={loading}
-            value={transactions}
-            rows={10}
-            dataKey="id" 
-            filters={filters}
-            rowClassName={rowClassName} 
-            stripedRows
-            paginator={transactions?.length > 10}
-          >
-            <Column
-              header="date"
-              body={dateBodyTemplate}
-              filterField='date'
-              dataType='date'
-              filter
-              filterElement={dateFilterTemplate}
-            ></Column>
-            <Column 
-              header="amount" 
-              body={amountTemplate}
-              field="amount" 
-              filter
-              filterField='amount'
-              filterElement={amountFilterTemplate}
-            ></Column>
-            <Column
-              header="source"
-              field="source"
-              filter
-              filterField='source'
-              filterPlaceholder='Search by source'
-            ></Column>
-            <Column
-              header="category"
-              field='category'
-              filter
-              filterField='category'
-              filterElement={categoryFilterTemplate}
-            ></Column>
-            <Column
-              header="user"
-              field='created_by'
-              filter
-              filterField='created_by'
-              filterElement={userFilterTemplate}
-            ></Column>
-            <Column
-              header="notes"
-              field="notes"
-              filter
-              filterField='notes'
-              filterPlaceholder='Search notes'
-            ></Column>
-            <Column align='right' body={editButton}></Column>
-            <Column headerClassName='w-px' body={deleteButton}></Column>
-          </DataTable>
-        </>
-      )}
+      <Toast ref={toast} />
+      <ConfirmDialog />
+      <DataTable 
+        loading={loading}
+        value={transactions}
+        rows={10}
+        dataKey="id" 
+        filters={filters}
+        rowClassName={rowClassName} 
+        stripedRows
+        paginator={transactions?.length > 10}
+      >
+        <Column
+          header="date"
+          body={dateBodyTemplate}
+          filterField='date'
+          dataType='date'
+          filter
+          filterElement={dateFilterTemplate}
+        ></Column>
+        <Column 
+          header="amount" 
+          body={amountTemplate}
+          field="amount" 
+          filter
+          filterField='amount'
+          filterElement={amountFilterTemplate}
+        ></Column>
+        <Column
+          header="source"
+          field="source"
+          filter
+          filterField='source'
+          filterPlaceholder='Search by source'
+        ></Column>
+        <Column
+          header="category"
+          field='category'
+          filter
+          filterField='category'
+          filterElement={categoryFilterTemplate}
+        ></Column>
+        <Column
+          header="user"
+          field='created_by'
+          filter
+          filterField='created_by'
+          filterElement={userFilterTemplate}
+        ></Column>
+        <Column
+          header="notes"
+          field="notes"
+          filter
+          filterField='notes'
+          filterPlaceholder='Search notes'
+        ></Column>
+        <Column align='right' body={editButton}></Column>
+        <Column headerClassName='w-px' body={deleteButton}></Column>
+      </DataTable>
     </div>
   )
 }

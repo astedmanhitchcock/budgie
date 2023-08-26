@@ -29,7 +29,7 @@ def create_transaction():
     amount = body.get('amount')
     amount_cents = int(float(amount) * 100) if amount is not None else 0.00
     user = User.query.filter_by(id=body.get('created_by')).first()
-    print(user)
+
     transaction = Transaction(
       is_income=body.get('is_income'),
       amount_cents=amount_cents,
@@ -113,3 +113,48 @@ def get_all_categories():
         data.append(category)
 
     return jsonify(data)
+
+@api_bp.route('/create-category', methods=['POST'])
+def create_category():
+    body = request.get_json()
+    category = ExpenseCategory(
+        title=body.get('title'),
+        is_fixed=body.get('is_fixed'),
+        notes=body.get('notes')
+    )
+    db.session.add(category)
+    db.session.commit()
+
+    categories = get_all_categories()
+    return categories
+
+@api_bp.route('/update-category', methods=['POST'])
+def update_category():
+    body = request.get_json()
+    id = body.get('id')
+    print(id)
+
+    if (id):
+      updates = {
+        'title': body.get('title'),
+        'is_fixed': body.get('is_fixed'),
+        'notes': body.get('notes')
+      }
+      print(updates)
+      db.session.query(ExpenseCategory).filter_by(id=int(id)).update(updates)
+      db.session.commit()
+
+    categories = get_all_categories()
+    return categories
+
+@api_bp.route('/delete-category', methods=['POST'])
+def delete_category():
+    body = request.get_json()
+    id = body.get('id')
+    if (id):
+      transaction = db.session.query(ExpenseCategory).get(id)
+      db.session.delete(transaction)
+      db.session.commit()
+
+    categories = get_all_categories()
+    return categories

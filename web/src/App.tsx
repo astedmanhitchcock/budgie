@@ -10,11 +10,15 @@ import TransactionDetail from '@pages/TransactionDetail';
 import Categories from '@pages/Categories';
 import FourOhFourPage from '@pages/404';
 
+import { CategoriesService } from './services/CategoriesService';
+
+import './main.scss';
+
+// import 'primereact/resources/themes/lara-light-indigo/theme.css';   // theme
 import 'primereact/resources/themes/mdc-light-deeppurple/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 
-import './main.scss';
 
 export const DataContext = createContext(null)
 export const UiContext = createContext(null)
@@ -76,19 +80,9 @@ const App: React.FC = () => {
   };
 
   const getCategories = async () => {
-    fetch(`${process.env.API_URL}categories`, {
-      method: "GET"
-    }).then(async (res) => {
-      if (res.ok) {
-        const jsonData = await res.json();
-        // console.log('categories! :: ', jsonData);
-        setAllCategories(jsonData)
-      } else {
-        console.log('res err? :: ', res);
-      }
-    }).catch(err => {
-      console.log('error :: ', err);
-    });
+    CategoriesService.getData().then((data) => {
+      setAllCategories(data)
+    })
   };  
 
   const getUsers = async () => {
@@ -155,7 +149,7 @@ function Layout() {
         <BaseNav />
       </header>
       <hr />
-      <main className="container mx-auto p-4">
+      <main className="p-4">
         {/*
           An <Outlet> renders whatever child route is currently active,
           so you can think about this <Outlet> as a placeholder for
