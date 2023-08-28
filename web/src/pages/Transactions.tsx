@@ -182,11 +182,26 @@ const Transactions: React.FC = () => {
   };
 
   useEffect(() => {
-    initFilters();
-    const transactionData = sanitizeTransactionDates(dataContext.transactions);
-    setTransactions(transactionData);
-    setLoading(false);
-    console.log('transactions :: ', transactions)
+    if (dataContext.transactions) {
+      initFilters();
+      const transactionData = sanitizeTransactionDates(dataContext.transactions);
+      setTransactions(transactionData);
+      setLoading(false);
+
+      const queryParameters = new URLSearchParams(window.location.search)
+      const category = queryParameters.get("category")
+      if (category) {
+        console.log('filters : ', filters)
+        setFilters({
+          ...filters,
+          'category': {
+            operator: FilterOperator.OR, 
+            constraints: [{ value: category, matchMode: FilterMatchMode.EQUALS }] 
+          }
+        })
+      }
+    }
+
   }, [dataContext.transactions])
 
   useEffect(() => {

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from "react-router-dom";
 
 import { Calendar } from 'primereact/calendar';
 import { Chart } from 'primereact/chart';
@@ -9,12 +10,13 @@ import { useDataContext } from '../App';
 const initalCurrentMonth = (): Date => {
   var date = new Date();
   const currentMonth = new Date(date.getFullYear(), date.getMonth(), 1);
+  console.log('initalCurrentMonth current Month? ', currentMonth)
   return currentMonth;
 }
 
 const Dashboard: React.FC = () => {
-  const [activeMonth, setActiveMonth] = useState<Date>(initalCurrentMonth());
-  const [transactions, setTransactions] = useState<any>([]);
+  const [activeMonth, setActiveMonth] = useState<Date | undefined>(undefined);
+  const [filteredTransations, setFilteredTransactions] = useState<any>([]);
   const [totalExpenses, setTotalExpenses] = useState<number>(0);
   const [totalIncome, setTotalIncome] = useState<number>(0);
 
@@ -22,12 +24,17 @@ const Dashboard: React.FC = () => {
   const [chartOptions, setChartOptions] = useState({});
 
   const dataContext: any = useDataContext();
+  const navigate = useNavigate();
 
   const getTransactionsByActiveMonth = (): void => {
     const isInMonth = (transaction_date: Date) => {
-      const date = new Date(transaction_date)
-      const lastDayOfMonth = new Date(activeMonth.getFullYear(), activeMonth.getMonth() + 1, 0);
-      return date >= activeMonth && date <= lastDayOfMonth
+      if (activeMonth) {
+        const date = new Date(transaction_date)
+        const lastDayOfMonth = new Date(activeMonth.getFullYear(), activeMonth.getMonth() + 1, 0);
+        return date >= activeMonth && date <= lastDayOfMonth
+      }
+
+      return false;
     }
 
     const filteredTransations = dataContext?.transactions?.filter((tr: any) => isInMonth(tr.date)) || []
@@ -35,11 +42,14 @@ const Dashboard: React.FC = () => {
   }
   
   useEffect(() => {
-    const transactions = getTransactionsByActiveMonth();
-    setTransactions(transactions);
+    if (activeMonth) {
+      const transactions = getTransactionsByActiveMonth();
+      setFilteredTransactions(transactions);
+    }
   }, [activeMonth])
 
   useEffect(() => {
+
 
     // setActiveMonth(currentMonth);
 
@@ -49,13 +59,13 @@ const Dashboard: React.FC = () => {
 
     // 
     // 
-    if (dataContext.categories && transactions) {
+    if (dataContext.categories && filteredTransations) {
 
       const expense_categories = dataContext.categories.reduce((acc: any, curr: any) => {
         const label = curr.title
         let value = 0;
 
-        transactions.forEach((transaction: any) => {
+        filteredTransations.forEach((transaction: any) => {
           const { amount, category, is_income } = transaction
           if (category === label && !is_income) {
             value += Number(parseFloat(amount))
@@ -89,6 +99,10 @@ const Dashboard: React.FC = () => {
                       usePointStyle: true
                   }
               }
+          },
+          onClick: (e: MouseEvent, el: any) => {
+            const category = expense_categories[el[0].index]
+            navigate(`/transactions?category=${category.label}`)
           }
       };
   
@@ -96,47 +110,60 @@ const Dashboard: React.FC = () => {
       setChartOptions(options);
     }
 
-  }, [dataContext.categories, transactions]);
+  }, [dataContext.categories, filteredTransations]);
+
+  useEffect(() => {
+    if (!activeMonth && dataContext.transactions) {
+      setActiveMonth(initalCurrentMonth())
+    }
+  }, [dataContext.transactions])
+
+  const Logo = () => (
+    <h2 className="font-bold text-xl">
+      Dashboard
+    </h2>
+  )
+
+  const Filters = () => (
+    <div className="flex items-center gap-2">
+      <label htmlFor="currentMonth">Current Month</label>
+      <Calendar
+        inputId="currentMonth"
+        className="p-inputtext-sm"
+        value={activeMonth}
+        onChange={(e) => setActiveMonth(e.value as Date)}
+        view="month"
+        dateFormat="mm/yy"
+      />
+    </div>
+  )
 
   return (
     <div>
       <Toolbar
-        start={
-          <h2 className="font-bold text-xl">
-            Dashboard
-          </h2>
-        }
-        end={
-          <div className="flex items-center gap-2">
-              <label htmlFor="currentMonth">Current Month</label>
-              <Calendar
-                inputId="currentMonth"
-                className="p-inputtext-sm"
-                value={activeMonth}
-                onChange={(e) => setActiveMonth(e.value as Date)}
-                view="month"
-                dateFormat="mm/yy"
-              />
-          </div>
-        }
+        start={<Logo />}
+        end={<Filters />}
+        className='px-0'
       />
-
       <hr />
-      <div>
-        <h2 className="font-bold text-xl">
-          Total Expenses: {totalExpenses}
-        </h2>
-        <h2 className="font-bold text-xl">
-          Total Income: {totalIncome}
-        </h2>
-      </div>
-      <div>
-        <h2 className="font-bold text-xl text-center">
-          Expenses
-        </h2>
-        <div className="card flex justify-center">
-
-          <Chart type="pie" data={expensesData} options={chartOptions} className="w-full md:w-1/2" />
+      <div className='flex justify-center flex-col md:flex-row gap-8 py-8 max-w-[1180px] mx-auto'>
+        <div className='w-full md:w-1/2 justify-center'>
+          <h2 className="font-bold text-xl text-center">
+            Projected
+          </h2>
+          <h3 className='text-lg text-center'>
+            total : { totalExpenses }
+          </h3>
+          <Chart type="pie" data={expensesData} options={chartOptions} />
+        </div>
+        <div className='w-full md:w-1/2 justify-center'>
+          <h2 className="font-bold text-xl text-center">
+            Actual
+          </h2>
+          <h3 className='text-lg text-center'>
+            total : { totalExpenses }
+          </h3>
+          <Chart type="pie" data={expensesData} options={chartOptions} />
         </div>
       </div>
     </div>

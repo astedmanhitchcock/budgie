@@ -51,6 +51,7 @@ class ExpenseCategory(db.Model):
 
 class MonthlyFixedBudget(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.Integer)
     month = db.Column(db.DateTime, index=True)
     income_cents = db.Column(db.Integer)
     flex_expenses_cents = db.Column(db.PickleType)

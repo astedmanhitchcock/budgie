@@ -119,7 +119,7 @@ const App: React.FC = () => {
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Dashboard />} />
-          <Route path="/transactions">
+          <Route path="transactions">
             <Route index element={<Transactions />} />
             <Route path=":transactionId" element={<TransactionDetail />} />
             <Route path="*" element={<TransactionDetail />} />
