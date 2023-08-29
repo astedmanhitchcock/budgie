@@ -8,7 +8,7 @@ import { useUiContext } from '../App';
 
 interface IEditModal {
   [key: string]: string | number | boolean | object | Date | ReactNode | undefined,
-  type: 'transaction' | 'category',
+  type: 'transaction' | 'category' | 'budget',
   children: ReactNode,
   isCreate?: boolean,
   onClose?: Function

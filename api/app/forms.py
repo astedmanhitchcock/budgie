@@ -35,7 +35,9 @@ class BudgetSelect(FlaskForm):
 class ExpenseEntryForm(FlaskForm):
     amount = DecimalField('amount')
 
+
 class BudgetForm(FlaskForm):
+    name = StringField('name', validators=[DataRequired()])
     month = DateField('month', format='%Y-%m', validators=[DataRequired()])
     income = DecimalField('montly income', validators=[DataRequired()])
     submit = SubmitField('create new monthly budget')

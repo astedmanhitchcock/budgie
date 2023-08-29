@@ -5,7 +5,10 @@ from datetime import datetime
 from app import db, services
 from app.models import ExpenseCategory, Transaction, User
 
+from app.routes.api.budgets import budget_api_bp  # noqa
+
 api_bp = Blueprint("api", __name__, url_prefix="/api/v0")
+api_bp.register_blueprint(budget_api_bp)
 
 @api_bp.route('/transactions')
 def get_all_transactions():

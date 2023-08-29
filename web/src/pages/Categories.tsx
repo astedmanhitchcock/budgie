@@ -25,7 +25,7 @@ const Categories: React.FC = () => {
   const dataContext: any = useDataContext();
 
   const EditButton = (rowData: ICategory) => (
-    <CategoryModal category={rowData} type="category" />
+    <CategoryModal category={rowData} />
   )
 
   const DeleteButton = (rowData: ICategory) => (

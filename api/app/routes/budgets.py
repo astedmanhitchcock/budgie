@@ -2,7 +2,7 @@ from flask import Blueprint, flash, redirect, render_template, url_for
 from flask_login import login_required
 from datetime import datetime
 
-from app import db
+from app import db, services
 from app.models import ExpenseCategory, MonthlyFixedBudget
 from app.forms import BudgetForm
 
@@ -32,24 +32,10 @@ def get_budget_form(obj=None):
 @budgets_bp.route('/all')
 @login_required
 def all():
-    budgets = MonthlyFixedBudget.query.all()
+    budgets_service = services.BudgetsService()
+    budgets =budgets_service.get_all()
 
-    # Sanitize transaction data for frontend
-    data = []
-    for b in budgets:
-        income_in_dollars = None
-
-        if b.income_cents is not None:
-            income_in_dollars = f'{b.income_cents/100:.2f}'
-
-        el = {}
-        el['id'] = b.id
-        el['month'] = b.month.strftime('%m/%Y')
-        el['income'] = income_in_dollars
-
-        data.append(el)
-
-    return render_template('budgets.html', title='budgets', budgets=data)
+    return render_template('budgets.html', title='budgets', budgets=budgets)
 
 
 @budgets_bp.route('/create', methods=['GET', 'POST'])
@@ -71,6 +57,7 @@ def create():
         income_in_cents = int(form.income.data * 100)
 
         budget = MonthlyFixedBudget(
+            name=form.name.data,
             month=form.month.data,
             income_cents=income_in_cents,
             fixed_expenses_cents=fixed_expenses_cents,
@@ -90,6 +77,7 @@ def create():
 def update(id):
     budget = MonthlyFixedBudget.query.filter_by(id=int(id)).first_or_404()
     form = get_budget_form(obj=budget)
+    print('heloo!', id)
 
     if budget:
         month_str = budget.month.strftime('%m/%Y')
@@ -117,7 +105,7 @@ def update(id):
 
     if form.validate_on_submit():
         form = get_budget_form()
-
+        print(form)
         # Gather data from dynamic fixed expenses fields.
         fixed_expenses_cents = dict()
         for input in form.fixed_expenses:
@@ -131,12 +119,13 @@ def update(id):
                 flex_expenses_cents[el[0]] = int(input.amount.data * 100)
 
         updates = {
+            'name': form.name.data,
             'month': form.month.data,
             'income_cents': int(form.income.data * 100),
             'fixed_expenses_cents': fixed_expenses_cents,
             'flex_expenses_cents': flex_expenses_cents
         }
-
+        print(updates)
         db.session.query(MonthlyFixedBudget).filter_by(id=int(id)).update(updates)
         db.session.commit()
         flash(f'updated budget #{id}')

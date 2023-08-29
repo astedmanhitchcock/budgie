@@ -7,9 +7,11 @@ import BaseFooter from './components/BaseFooter';
 import Dashboard from '@pages/Dashboard';
 import Transactions from '@pages/Transactions';
 import TransactionDetail from '@pages/TransactionDetail';
+import Budgets, { IBudget } from '@pages/Budgets';
 import Categories from '@pages/Categories';
 import FourOhFourPage from '@pages/404';
 
+import { BudgetsService } from './services/BudgetsService';
 import { CategoriesService } from './services/CategoriesService';
 
 import './main.scss';
@@ -23,7 +25,7 @@ import 'primeicons/primeicons.css';
 export const DataContext = createContext(null)
 export const UiContext = createContext(null)
 
-const Provider: Context<unknown> = ({ children, transactions, categories, users, setTransactions, setUsers, setCategories }: any) => {
+const Provider: Context<unknown> = ({ children, transactions, budgets, categories, users, setTransactions, setUsers, setCategories }: any) => {
   const [windowWidth, setWindowWidth]   = useState(window.innerWidth);
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
   const [isMobile, setIsMobile] = useState(false);
@@ -42,7 +44,7 @@ const Provider: Context<unknown> = ({ children, transactions, categories, users,
   }, []);
 
   return (
-    <DataContext.Provider value={{transactions, categories, users, setTransactions, setUsers, setCategories}}>
+    <DataContext.Provider value={{transactions, budgets, categories, users, setTransactions, setUsers, setCategories}}>
       <UiContext.Provider value={{isMobile}}>
         { children }
       </UiContext.Provider>
@@ -60,6 +62,7 @@ export const useUiContext = () => {
 
 const App: React.FC = () => {
   const [allTransactions, setAllTransactions] = useState(undefined);
+  const [allBudgets, setAllBudgets] = useState<IBudget[] | undefined>(undefined)
   const [allCategories, setAllCategories] = useState(undefined);
   const [allUsers, setAllUsers] = useState(undefined);
 
@@ -78,6 +81,12 @@ const App: React.FC = () => {
       console.log('error :: ', err);
     });
   };
+
+  const getBudgets = async () => {
+    BudgetsService.getData().then((data) => {
+      setAllBudgets(data)
+    })
+  }
 
   const getCategories = async () => {
     CategoriesService.getData().then((data) => {
@@ -104,6 +113,7 @@ const App: React.FC = () => {
   useEffect(() => {
     getTransactions();
     getUsers();
+    getBudgets();
     getCategories();
   }, [])
 
@@ -111,6 +121,7 @@ const App: React.FC = () => {
     <Provider
       transactions={allTransactions}
       setTransactions={setAllTransactions} 
+      budgets={allBudgets}
       categories={allCategories}
       setCategories={setAllCategories}
       users={allUsers}
@@ -127,6 +138,7 @@ const App: React.FC = () => {
 
 
           <Route path="categories" element={<Categories />} />
+          <Route path="budgets" element={<Budgets />} />
 
           {/* 
             Using path="*"" means "match anything", so this route
